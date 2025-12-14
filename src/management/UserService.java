@@ -1,36 +1,66 @@
 package management;
+
 import management.Admin;
 import management.User;
 import management.UserRole;
+
 import static management.UserRole.ADMIN;
+
 import java.util.ArrayList;
 import java.io.*;
+import java.util.List;
 
 public class UserService {
 
     private ArrayList<User> list_users;
     private final String FILE_NAME = "users.txt";
+    private int nextUserId = 1;
 
     public UserService() {
         list_users = new ArrayList<>();
-        loadUsers();
+
     }
 
     public void addUser(User user) {
         list_users.add(user);
-        saveUsers();
     }
 
-    public User getUserById(String id) {
+    public User getUserById(int id) {
         for (User u : list_users) {
-            if (u.getUserId().equals(id)) {
+            if (u.getUserId() == id) {
                 return u;
             }
         }
         return null;
     }
 
+
+    public boolean registerUser(User newUser) {
+
+
+        if (newUser == null ||
+                newUser.getUsername() == null ||
+                newUser.getPassword() == null) {
+            return false;
+        }
+
+
+        for (User u : list_users) {
+            if (u.getUsername().equals(newUser.getUsername())) {
+                return false;
+            }
+        }
+
+        list_users.add(newUser);
+
+        return true;
+    }
+
+
     public User authenticate(String username, String password) {
+        if (username == null || password == null)
+            return null;
+
         for (User u : list_users) {
             if (u.getUsername().equals(username)
                     && u.checkPassword(password)) {
@@ -40,53 +70,45 @@ public class UserService {
         return null;
     }
 
+
     public ArrayList<User> getAllUsers() {
         return list_users;
     }
 
-    private void loadUsers() {
-        File file = new File(FILE_NAME);
-        if (!file.exists())
-            return;
+    public void loadUsers(List<User> loadedUsers) {
+        list_users.clear();
+        list_users.addAll(loadedUsers);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split("\\|");
-
-                String id = data[0];
-                String name = data[1];
-                String email = data[2];
-                String username = data[3];
-                String password = data[4];
-                UserRole role = UserRole.valueOf(data[5]);
-
-                switch (role) {
-                    case ADMIN:
-                        list_users.add(new Admin(id, name, email, username, password));
-                        break;
-                }
+        nextUserId = 1;
+        for (User u : list_users) {
+            if (u.getUserId() >= nextUserId) {
+                nextUserId = u.getUserId() + 1;
             }
-        } catch (IOException e) {
-            System.out.println("Error loading users: " + e.getMessage());
         }
     }
 
-    private void saveUsers() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_NAME))) {
-            for (User u : list_users) {
-                pw.println(
-                        u.getUserId() + "|" +
-                                u.getName() + "|" +
-                                u.getEmail() + "|" +
-                                u.getUsername() + "|" +
-                                u.getPassword() + "|" +
-                                u.getRole()
-                );
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving users: " + e.getMessage());
-        }
+    public boolean updateUserName(int userId, String newName) {
+        User user = getUserById(userId);
+        if (user == null || newName == null || newName.isEmpty()) return false;
+
+        user.setName(newName);
+        return true;
     }
+
+    public boolean updateUserEmail(int userId, String newEmail) {
+        User user = getUserById(userId);
+        if (user == null || newEmail == null || newEmail.isEmpty()) return false;
+
+        user.setEmail(newEmail);
+        return true;
+    }
+
+    public boolean updateUserPassword(int userId, String newPassword) {
+        User user = getUserById(userId);
+        if (user == null || newPassword == null || newPassword.isEmpty()) return false;
+
+        user.setPassword(newPassword);
+        return true;
+    }
+
 }
