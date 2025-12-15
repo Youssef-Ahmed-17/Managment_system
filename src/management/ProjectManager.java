@@ -22,9 +22,7 @@ public class ProjectManager extends User {
 
     @Override
     public void showMenu() {
-
         int choice;
-
         do {
             System.out.println("\n===== Project Manager Menu =====");
             System.out.println("1. Create Project");
@@ -32,6 +30,10 @@ public class ProjectManager extends User {
             System.out.println("3. Assign Task");
             System.out.println("4. View My Projects");
             System.out.println("5. View Tasks");
+            System.out.println("6. Update Project Name");
+            System.out.println("7. Update Project Description");
+            System.out.println("8. Delete Project");
+            System.out.println("9. View All Projects");
             System.out.println("0. Logout");
             System.out.print("Choose: ");
 
@@ -47,6 +49,10 @@ public class ProjectManager extends User {
                 case 3 -> assignTask();
                 case 4 -> viewMyProjects();
                 case 5 -> viewTasks();
+                case 6 -> updateProjectName();
+                case 7 -> updateProjectDescription();
+                case 8 -> deleteProject();
+                case 9 -> viewAllProjects();
                 case 0 -> System.out.println("Logged out successfully.");
                 default -> System.out.println("Invalid choice");
             }
@@ -60,8 +66,7 @@ public class ProjectManager extends User {
         System.out.print("Project description: ");
         String desc = scanner.nextLine();
         Project project = projectService.createProject(name, getUserId(), desc);
-        if (project != null) System.out.println("Project created successfully ✔️");
-        else System.out.println("Failed to create project ❌");
+        System.out.println(project != null ? "Project created successfully ✔️" : "Failed to create project ❌");
     }
 
     private void createTask() {
@@ -76,8 +81,7 @@ public class ProjectManager extends User {
         System.out.print("Task description: ");
         String desc = scanner.nextLine();
         Task task = taskService.createTask(projectId, title, desc);
-        if (task != null) System.out.println("Task created successfully ✔️");
-        else System.out.println("Failed to create task ❌");
+        System.out.println(task != null ? "Task created successfully ✔️" : "Failed to create task ❌");
     }
 
     private void assignTask() {
@@ -85,8 +89,7 @@ public class ProjectManager extends User {
         int taskId = Integer.parseInt(scanner.nextLine());
         System.out.print("User ID to assign: ");
         int userId = Integer.parseInt(scanner.nextLine());
-        if (taskService.assignTask(taskId, userId)) System.out.println("Task assigned ✔️");
-        else System.out.println("Failed to assign task ❌");
+        System.out.println(taskService.assignTask(taskId, userId) ? "Task assigned ✔️" : "Failed to assign task ❌");
     }
 
     private void viewMyProjects() {
@@ -98,8 +101,39 @@ public class ProjectManager extends User {
 
     private void viewTasks() {
         System.out.println("=== My Tasks ===");
-        for (Task t : taskService.getTasksByProject(getUserId())) {
-            System.out.println(t);
+        for (Project p : projectService.getProjectsByManager(getUserId())) {
+            for (Task t : taskService.getTasksByProject(p.getId())) {
+                System.out.println(t);
+            }
+        }
+    }
+
+    private void updateProjectName() {
+        System.out.print("Enter Project ID: ");
+        int projectId = Integer.parseInt(scanner.nextLine());
+        System.out.print("New Project Name: ");
+        String newName = scanner.nextLine();
+        System.out.println(projectService.updateProjectName(projectId, newName) ? "Project name updated ✔️" : "Failed ❌");
+    }
+
+    private void updateProjectDescription() {
+        System.out.print("Enter Project ID: ");
+        int projectId = Integer.parseInt(scanner.nextLine());
+        System.out.print("New Description: ");
+        String newDesc = scanner.nextLine();
+        System.out.println(projectService.updateDescription(projectId, newDesc) ? "Project description updated ✔️" : "Failed ❌");
+    }
+
+    private void deleteProject() {
+        System.out.print("Enter Project ID: ");
+        int projectId = Integer.parseInt(scanner.nextLine());
+        System.out.println(projectService.deleteProject(projectId) ? "Project deleted ✔️" : "Failed ❌");
+    }
+
+    private void viewAllProjects() {
+        System.out.println("=== All Projects ===");
+        for (Project p : projectService.getAllProjects()) {
+            System.out.println(p);
         }
     }
 }

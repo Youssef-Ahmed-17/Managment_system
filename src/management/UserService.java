@@ -12,67 +12,33 @@ public class UserService {
         users = new ArrayList<>();
     }
 
+    public int getNextUserId() {
+        return nextUserId++;
+    }
 
-    //    public boolean registerUser(User newUser) {
-//
-//        if (newUser == null ||
-//                newUser.getUsername() == null ||
-//                newUser.getUsername().trim().isEmpty() ||
-//                newUser.getPassword() == null ||
-//                newUser.getPassword().trim().isEmpty()) {
-//            return false;
-//        }
-//
-//        if (usernameExists(newUser.getUsername())) {
-//            return false;
-//        }
-//
-//        newUser.setUserId(nextUserId++);
-//        users.add(newUser);
-//        FileManager.saveUsers(users);
-//        return true;
-//    }
     public boolean registerUser(User newUser) {
-
         if (newUser == null ||
-                newUser.getUsername() == null ||
-                newUser.getUsername().trim().isEmpty() ||
-                newUser.getPassword() == null ||
-                newUser.getPassword().trim().isEmpty()) {
-            return false;
-        }
+                newUser.getUsername() == null || newUser.getUsername().trim().isEmpty() ||
+                newUser.getPassword() == null || newUser.getPassword().trim().isEmpty()) return false;
 
-        if (usernameExists(newUser.getUsername())) {
-            return false;
-        }
+        if (usernameExists(newUser.getUsername())) return false;
 
-        users.add(newUser);   // الـ ID جاي جاهز من constructor
+        newUser.setUserId(getNextUserId());
+        users.add(newUser);
         FileManager.saveUsers(users);
         return true;
     }
 
-
     public User authenticate(String username, String password) {
-
-        if (username == null || password == null) {
-            return null;
-        }
-
+        if (username == null || password == null) return null;
         for (User u : users) {
-            if (u.getUsername().equals(username) &&
-                    u.checkPassword(password)) {
-                return u;
-            }
+            if (u.getUsername().equals(username) && u.checkPassword(password)) return u;
         }
         return null;
     }
 
     public User getUserById(int id) {
-        for (User u : users) {
-            if (u.getUserId() == id) {
-                return u;
-            }
-        }
+        for (User u : users) if (u.getUserId() == id) return u;
         return null;
     }
 
@@ -81,22 +47,13 @@ public class UserService {
     }
 
     private boolean usernameExists(String username) {
-        for (User u : users) {
-            if (u.getUsername().equals(username)) {
-                return true;
-            }
-        }
+        for (User u : users) if (u.getUsername().equalsIgnoreCase(username.trim())) return true;
         return false;
     }
 
-
     public boolean updateUserName(int userId, String newName) {
         User user = getUserById(userId);
-
-        if (user == null || newName == null || newName.trim().isEmpty()) {
-            return false;
-        }
-
+        if (user == null || newName == null || newName.trim().isEmpty()) return false;
         user.setName(newName);
         FileManager.saveUsers(users);
         return true;
@@ -104,39 +61,25 @@ public class UserService {
 
     public boolean updateUserEmail(int userId, String newEmail) {
         User user = getUserById(userId);
-
-        if (user == null || newEmail == null || newEmail.trim().isEmpty()) {
-            return false;
-        }
-
+        if (user == null || newEmail == null || newEmail.trim().isEmpty()) return false;
         user.setEmail(newEmail);
         FileManager.saveUsers(users);
         return true;
     }
 
-    public boolean updateUserPassword(int userId, String newPassword) {
+    public boolean updateUserPassword(int userId, String oldPassword, String newPassword) {
         User user = getUserById(userId);
-
-        if (user == null || newPassword == null || newPassword.trim().isEmpty()) {
-            return false;
-        }
-
+        if (user == null || newPassword == null || newPassword.trim().isEmpty()) return false;
+        if (!user.checkPassword(oldPassword)) return false;
         user.setPassword(newPassword);
         FileManager.saveUsers(users);
         return true;
     }
 
-
     public void loadUsers(List<User> loadedUsers) {
-
         users.clear();
-        users.addAll(loadedUsers);
-
+        if (loadedUsers != null) users.addAll(loadedUsers);
         nextUserId = 1;
-        for (User u : users) {
-            if (u.getUserId() >= nextUserId) {
-                nextUserId = u.getUserId() + 1;
-            }
-        }
+        for (User u : users) if (u.getUserId() >= nextUserId) nextUserId = u.getUserId() + 1;
     }
 }

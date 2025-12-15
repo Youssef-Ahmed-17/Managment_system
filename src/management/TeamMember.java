@@ -18,9 +18,7 @@ public class TeamMember extends User {
 
     @Override
     public void showMenu() {
-
         int choice;
-
         do {
             System.out.println("\n===== Team Member Menu =====");
             System.out.println("1. View My Tasks");
@@ -61,7 +59,6 @@ public class TeamMember extends User {
             case 3 -> TaskStatus.DONE;
             default -> TaskStatus.TODO;
         };
-        if (taskService.updateStatus(taskId, status)) System.out.println("Status updated ✔️");
-        else System.out.println("Failed to update status ❌");
+        System.out.println(taskService.updateStatus(taskId, status) ? "Status updated ✔️" : "Failed ❌");
     }
 }
