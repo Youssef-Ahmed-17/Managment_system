@@ -10,7 +10,7 @@ public class FileManager {
     private static final String PROJECTS_FILE = "projects.txt";
     private static final String TASKS_FILE = "tasks.txt";
 
-    /* ================= USERS ================= */
+
 
     public static void saveUsers(List<User> users) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USERS_FILE))) {
@@ -64,7 +64,7 @@ public class FileManager {
         return users;
     }
 
-    /* ================= PROJECTS ================= */
+
 
     public static void saveProjects(List<Project> projects) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PROJECTS_FILE))) {
@@ -107,7 +107,7 @@ public class FileManager {
         return projects;
     }
 
-    /* ================= TASKS ================= */
+
 
     public static void saveTasks(List<Task> tasks) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TASKS_FILE))) {

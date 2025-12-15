@@ -42,7 +42,7 @@ public class ProjectService {
         return new ArrayList<>(projects);
     }
 
-    // ⭐ مشاريع مدير معيّن
+
     public ArrayList<Project> getProjectsByManager(int managerId) {
         ArrayList<Project> result = new ArrayList<>();
         for (Project p : projects) {

@@ -18,14 +18,15 @@ public class Admin extends User {
 
     @Override
     public void showMenu() {
-
         int choice;
-
         do {
             System.out.println("\n--- Admin Menu ---");
             System.out.println("1. Add User");
             System.out.println("2. List Users");
             System.out.println("3. Search User");
+            System.out.println("4. Update User Name");
+            System.out.println("5. Update User Email");
+            System.out.println("6. Update User Password");
             System.out.println("0. Logout");
             System.out.print("Choose: ");
 
@@ -39,10 +40,12 @@ public class Admin extends User {
                 case 1 -> addUser();
                 case 2 -> listUsers();
                 case 3 -> searchUser();
+                case 4 -> updateUserName();
+                case 5 -> updateUserEmail();
+                case 6 -> updateUserPassword();
                 case 0 -> System.out.println("Logged out successfully.");
                 default -> System.out.println("Invalid choice");
             }
-
         } while (choice != 0);
     }
 
@@ -55,9 +58,8 @@ public class Admin extends User {
         String username = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        User user = new TeamMember(0, name, email, username, password); // default TeamMember
-        if (userService.registerUser(user)) System.out.println("User added ✔️");
-        else System.out.println("Failed to add user ❌");
+        User user = new TeamMember(0, name, email, username, password);
+        System.out.println(userService.registerUser(user) ? "User added ✔️" : "Failed ❌");
     }
 
     private void listUsers() {
@@ -78,4 +80,36 @@ public class Admin extends User {
         }
         System.out.println("User not found ❌");
     }
+
+    private void updateUserName() {
+        System.out.print("User ID: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        System.out.print("New Name: ");
+        String newName = scanner.nextLine();
+        System.out.println(userService.updateUserName(id, newName) ? "Name updated ✔️" : "Failed ❌");
+    }
+
+    private void updateUserEmail() {
+        System.out.print("User ID: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        System.out.print("New Email: ");
+        String newEmail = scanner.nextLine();
+        System.out.println(userService.updateUserEmail(id, newEmail) ? "Email updated ✔️" : "Failed ❌");
+    }
+
+    private void updateUserPassword() {
+        System.out.print("User ID: ");
+        int id = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("Old Password: ");
+        String oldPassword = scanner.nextLine();
+
+        System.out.print("New Password: ");
+        String newPassword = scanner.nextLine();
+
+        boolean updated = userService.updateUserPassword(id, oldPassword, newPassword);
+        if (updated) System.out.println("Password updated ✔️");
+        else System.out.println("Failed ❌ (wrong old password or invalid new password)");
+    }
+
 }
