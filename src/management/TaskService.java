@@ -1,58 +1,61 @@
 package management;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskService {
+
 
     private ArrayList<Task> list_tasks = new ArrayList<>();
     private int nextTaskId = 1;
 
-    public ArrayList<Task> loadTasks() {
-        return list_tasks;
-    }
-    //File
-    public void saveTasks() {
-        System.out.println("Tasks saved successfully");
-    }
+    public void loadTasks() {
+        list_tasks.clear();
 
-//    public Task createTask(int projectId, String title, String description, String priority) {
-//        Task task = new Task(
-//                nextTaskId++,
-//                title,
-//                description,
-//                projectId
-//        );
-//
-//        task.setStatus(TaskStatus.TODO);
-//        task.setPriority(TaskPriority.MEDIUM);
-//
-//        list_tasks.add(task);
-//        return task;
-//    }
+        List<Task> loadedTasks = FileManager.loadTasks();
+        if (loadedTasks == null) return;
 
-//    public boolean assignTask(int taskId, int userId) {
-//        Task task = getTaskById(taskId);
-//        if (task != null) {
-//            task.setAssignedUserId(userId);
-//            return true;
-//        }
-//        return false;
-//    }
+        list_tasks.addAll(loadedTasks);
 
-    public boolean updateStatus(int taskId, String status) {
-        Task task = getTaskById(taskId);
-        if (task != null) {
-            task.setStatus(TaskStatus.valueOf(status.toUpperCase()));
-            return true;
+        nextTaskId = 1;
+        for (Task t : list_tasks) {
+            if (t.getTaskId() >= nextTaskId) {
+                nextTaskId = t.getTaskId() + 1;
+            }
         }
-        return false;
+    }
+
+
+    public void saveTasksToFile() {
+        FileManager.saveTasks(list_tasks);
+    }
+
+
+    public Task createTask(int projectId, String title, String description) {
+        Task task = new Task(nextTaskId++, title, description, projectId);
+        list_tasks.add(task);
+        return task;
+    }
+
+    public boolean assignTask(int taskId, int userId) {
+        Task task = getTaskById(taskId);
+        if (task == null) return false;
+
+        task.setAssignedUserId(userId);
+        return true;
+    }
+
+    public boolean updateStatus(int taskId, TaskStatus status) {
+        Task task = getTaskById(taskId);
+        if (task == null) return false;
+
+        task.setStatus(status);
+        return true;
     }
 
     public Task getTaskById(int id) {
         for (Task t : list_tasks) {
-            if (t.getTaskId() == id) {
-                return t;
-            }
+            if (t.getTaskId() == id) return t;
         }
         return null;
     }
@@ -60,9 +63,7 @@ public class TaskService {
     public ArrayList<Task> getTasksByProject(int projectId) {
         ArrayList<Task> result = new ArrayList<>();
         for (Task t : list_tasks) {
-            if (t.getProjectId() == projectId) {
-                result.add(t);
-            }
+            if (t.getProjectId() == projectId) result.add(t);
         }
         return result;
     }
@@ -70,9 +71,7 @@ public class TaskService {
     public ArrayList<Task> getTasksByUser(int userId) {
         ArrayList<Task> result = new ArrayList<>();
         for (Task t : list_tasks) {
-            if (t.getAssignedUserId() == userId) {
-                result.add(t);
-            }
+            if (t.getAssignedUserId() == userId) result.add(t);
         }
         return result;
     }

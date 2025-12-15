@@ -1,6 +1,7 @@
 package management;
 
 public class Task {
+
     private int taskId;
     private String title;
     private String description;
@@ -9,66 +10,27 @@ public class Task {
     private int assignedUserId;
     private int projectId;
 
-    // Full constructor
-    public Task(String title, int assignedUserId, int projectId) {
+    public Task(int taskId, String title, String description, int projectId) {
+        this.taskId = taskId;
         this.title = title;
+        this.description = description;
+        this.projectId = projectId;
         this.status = TaskStatus.TODO;
         this.priority = TaskPriority.MEDIUM;
-        this.assignedUserId = -1;
-        this.projectId = projectId;
-
-    }
-    public void changeStatus(TaskStatus newStatus) {
-        this.status = newStatus;
+        this.assignedUserId = -1; // not assigned yet
     }
 
-    public void assignToUser(int userId) {
-        this.assignedUserId = userId;
-    }
+    public int getTaskId() { return taskId; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public TaskStatus getStatus() { return status; }
+    public TaskPriority getPriority() { return priority; }
+    public int getAssignedUserId() { return assignedUserId; }
+    public int getProjectId() { return projectId; }
 
-
-    // Getters
-    public int getTaskId() {
-
-        return taskId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
-    }
-
-    public TaskPriority getPriority() {
-        return priority;
-    }
-
-    public int getAssignedUserId() {
-        return assignedUserId;
-    }
-
-    public int getProjectId() {
-        return projectId;
-    }
-
-    // Setters
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPriority(TaskPriority priority) {
-        this.priority = priority;
-    }
-
-    public void setStatus(TaskStatus status) {
-        this.status = status;
+    public void setStatus(TaskStatus status) { this.status = status; }
+    public void setPriority(TaskPriority priority) { this.priority = priority; }
+    public void setAssignedUserId(int assignedUserId) {
+        this.assignedUserId = assignedUserId;
     }
 }
-
