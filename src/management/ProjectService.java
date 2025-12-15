@@ -12,7 +12,6 @@ public class ProjectService {
         projects = new ArrayList<>();
     }
 
-
     public Project createProject(String name, int managerId, String description) {
 
         if (name == null || name.trim().isEmpty()) {
@@ -25,7 +24,6 @@ public class ProjectService {
         FileManager.saveProjects(projects);
         return project;
     }
-
 
     public Project getProjectById(int id) {
         for (Project project : projects) {
@@ -44,6 +42,16 @@ public class ProjectService {
         return new ArrayList<>(projects);
     }
 
+    // ⭐ مشاريع مدير معيّن
+    public ArrayList<Project> getProjectsByManager(int managerId) {
+        ArrayList<Project> result = new ArrayList<>();
+        for (Project p : projects) {
+            if (p.getManagerId() == managerId) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
 
     public boolean updateProjectName(int id, String newName) {
         Project project = getProjectById(id);
@@ -69,7 +77,6 @@ public class ProjectService {
         return true;
     }
 
-
     public boolean deleteProject(int id) {
         Project project = getProjectById(id);
 
@@ -82,10 +89,12 @@ public class ProjectService {
         return true;
     }
 
-
     public void loadProjects(List<Project> loadedProjects) {
 
         projects.clear();
+
+        if (loadedProjects == null) return;
+
         projects.addAll(loadedProjects);
 
         nextProjectId = 1;
