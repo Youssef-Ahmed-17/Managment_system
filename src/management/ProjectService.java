@@ -12,23 +12,21 @@ public class ProjectService {
         projects = new ArrayList<>();
     }
 
-
     public Project createProject(String name, int managerId, String description) {
-        if (name == null || name.isEmpty()) {
+
+        if (name == null || name.trim().isEmpty()) {
             return null;
         }
 
         Project project = new Project(nextProjectId++, name, managerId, description);
         projects.add(project);
+
+        FileManager.saveProjects(projects);
         return project;
     }
 
     public Project getProjectById(int id) {
-
-        for (int i = 0; i < projects.size(); i++) {
-
-            Project project = projects.get(i);
-
+        for (Project project : projects) {
             if (project.getId() == id) {
                 return project;
             }
@@ -37,33 +35,66 @@ public class ProjectService {
     }
 
     public boolean projectExists(int id) {
-        for (int i = 0; i < projects.size(); i++) {
-
-            Project project = projects.get(i);
-
-            if (project.getId() == id) {
-                return true;
-            }
-        }
-        return false;
-
-    }
-
-    public boolean deleteProject(int id) {
-        Project project = getProjectById(id);
-        if (project != null) {
-            projects.remove(project);
-            return true;
-        }
-        return false;
+        return getProjectById(id) != null;
     }
 
     public ArrayList<Project> getAllProjects() {
         return new ArrayList<>(projects);
     }
 
+    // ⭐ مشاريع مدير معيّن
+    public ArrayList<Project> getProjectsByManager(int managerId) {
+        ArrayList<Project> result = new ArrayList<>();
+        for (Project p : projects) {
+            if (p.getManagerId() == managerId) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public boolean updateProjectName(int id, String newName) {
+        Project project = getProjectById(id);
+
+        if (project == null || newName == null || newName.trim().isEmpty()) {
+            return false;
+        }
+
+        project.setName(newName);
+        FileManager.saveProjects(projects);
+        return true;
+    }
+
+    public boolean updateDescription(int id, String newDescription) {
+        Project project = getProjectById(id);
+
+        if (project == null || newDescription == null || newDescription.trim().isEmpty()) {
+            return false;
+        }
+
+        project.setDescription(newDescription);
+        FileManager.saveProjects(projects);
+        return true;
+    }
+
+    public boolean deleteProject(int id) {
+        Project project = getProjectById(id);
+
+        if (project == null) {
+            return false;
+        }
+
+        projects.remove(project);
+        FileManager.saveProjects(projects);
+        return true;
+    }
+
     public void loadProjects(List<Project> loadedProjects) {
+
         projects.clear();
+
+        if (loadedProjects == null) return;
+
         projects.addAll(loadedProjects);
 
         nextProjectId = 1;
@@ -73,22 +104,4 @@ public class ProjectService {
             }
         }
     }
-
-    public boolean updateProjectName(int id, String newName) {
-        Project project = getProjectById(id);
-        if (project == null || newName == null || newName.trim().isEmpty()) {
-            return false;
-        }
-        project.setName(newName);
-        return true;
-    }
-
-    public void updateDescription(int id, String newdescription) {
-        Project project = getProjectById(id);
-        project.setDescription(newdescription);
-        ;
-
-    }
-
-
 }
